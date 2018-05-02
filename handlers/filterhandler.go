@@ -1,12 +1,16 @@
 package handlers
 
 import (
+	"encoding/json"
 	"errors"
-	"fmt"
 	"log"
 	"net/http"
+	"reflect"
 	"strconv"
 
+	"github.com/filtermatching/stream"
+
+	"github.com/filtermatching/db"
 	f "github.com/filtermatching/filter"
 )
 
@@ -19,8 +23,28 @@ func HandleFilter(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
 		return
 	}
-	fmt.Println(filter)
-	fmt.Fprintf(w, `{"display_name": "test name"}`)
+	//TODO: pass file name from argument
+	profiles, err := db.LoadProfiles("../filtermatching/db/matches.json")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	var subscriptions []stream.Subscription
+	for _, profile := range profiles.Matches {
+		matcher := stream.Apply(profile, *filter)
+		subscription := stream.Subscribe(matcher)
+		subscriptions = append(subscriptions, subscription)
+	}
+	var matchedProfiles db.Profiles
+	for _, subscription := range subscriptions {
+		matched := <-subscription.Updates()
+		if !reflect.DeepEqual(matched, db.Profile{}) {
+			matchedProfiles.Matches = append(matchedProfiles.Matches, matched)
+		}
+		subscription.Close()
+	}
+	json.NewEncoder(w).Encode(matchedProfiles)
 }
 
 /*
