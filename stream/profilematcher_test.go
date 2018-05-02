@@ -114,7 +114,7 @@ func TestApplyFilter(t *testing.T) {
 						Longitude: -1.548567,
 					},
 					Photo:     "http://thecatapi.com/api/images/get?format=src&type=gif",
-					Score:     0.89,
+					Score:     0.80,
 					Contacts:  2,
 					Favourite: true,
 					Religion:  "Atheist",
