@@ -1,6 +1,9 @@
 package stream
 
 import (
+	"log"
+	"time"
+
 	"github.com/filtermatching/db"
 	f "github.com/filtermatching/filter"
 )
@@ -56,5 +59,9 @@ func (s *sub) Close() {
 }
 
 func (s *sub) filter() {
-	s.updates <- s.matcher.Apply()
+	select {
+	case s.updates <- s.matcher.Apply():
+	case <-time.After(300 * time.Millisecond):
+		log.Println("Fetch request timed out!")
+	}
 }
