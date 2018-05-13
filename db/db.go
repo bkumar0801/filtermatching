@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
+	"path/filepath"
 )
 
 /*
@@ -42,7 +43,12 @@ type Profiles struct {
 LoadProfiles ...
 */
 func LoadProfiles(filename string) (Profiles, error) {
-	raw, err := ioutil.ReadFile(filename)
+
+	if filename == "" {
+		filename = "../filtermatching/db/matches.json"
+	}
+	absPath, _ := filepath.Abs(filename)
+	raw, err := ioutil.ReadFile(absPath)
 	if err != nil {
 		log.Println(err.Error())
 	}

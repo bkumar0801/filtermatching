@@ -31,7 +31,7 @@ func TestHandlerFilter(t *testing.T) {
 			t.Error("NewRequest Error: ", err.Error())
 		}
 		w := httptest.NewRecorder()
-		handler := http.HandlerFunc(HandleFilter)
+		handler := http.HandlerFunc(HandleFilter("../db/matches.json"))
 		handler.ServeHTTP(w, r)
 		if c.status != w.Code {
 			t.Errorf("\nHandler returned wrong status code:\n\texpected:%d\n\tgot:%d", c.status, w.Code)

@@ -17,34 +17,37 @@ import (
 /*
 HandleFilter ...
 */
-func HandleFilter(w http.ResponseWriter, r *http.Request) {
-	filter, err := BuildFilterFromQuery(r)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
-		return
-	}
-	//TODO: pass file name from argument
-	profiles, err := db.LoadProfiles("../filtermatching/db/matches.json")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	var subscriptions []stream.Subscription
-	for _, profile := range profiles.Matches {
-		matcher := stream.Apply(profile, *filter)
-		subscription := stream.Subscribe(matcher)
-		subscriptions = append(subscriptions, subscription)
-	}
-	var matchedProfiles db.Profiles
-	for _, subscription := range subscriptions {
-		matched := <-subscription.Updates()
-		if !reflect.DeepEqual(matched, db.Profile{}) {
-			matchedProfiles.Matches = append(matchedProfiles.Matches, matched)
+func HandleFilter(filename string) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		(w).Header().Set("Access-Control-Allow-Origin", "*")
+		(w).Header().Set("Content-Type", "application/json")
+		filter, err := BuildFilterFromQuery(r)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+			return
 		}
-		subscription.Close()
+		profiles, err := db.LoadProfiles(filename)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		var subscriptions []stream.Subscription
+		for _, profile := range profiles.Matches {
+			matcher := stream.Apply(profile, *filter)
+			subscription := stream.Subscribe(matcher)
+			subscriptions = append(subscriptions, subscription)
+		}
+		var matchedProfiles db.Profiles
+		for _, subscription := range subscriptions {
+			matched := <-subscription.Updates()
+			if !reflect.DeepEqual(matched, db.Profile{}) {
+				matchedProfiles.Matches = append(matchedProfiles.Matches, matched)
+			}
+			subscription.Close()
+		}
+		json.NewEncoder(w).Encode(matchedProfiles)
 	}
-	json.NewEncoder(w).Encode(matchedProfiles)
 }
 
 /*
