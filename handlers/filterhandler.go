@@ -19,7 +19,6 @@ HandleFilter ...
 */
 func HandleFilter(filename string) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		(w).Header().Set("Access-Control-Allow-Origin", "*")
 		(w).Header().Set("Content-Type", "application/json")
 		filter, err := BuildFilterFromQuery(r)
 		if err != nil {
