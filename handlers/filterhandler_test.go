@@ -26,7 +26,7 @@ func TestHandlerFilter(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		r, err := http.NewRequest("POST", c.uri, nil)
+		r, err := http.NewRequest("GET", c.uri, nil)
 		if err != nil {
 			t.Error("NewRequest Error: ", err.Error())
 		}
@@ -83,7 +83,7 @@ func TestBuildFilterFromQuery(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		r, err := http.NewRequest("POST", c.uri, nil)
+		r, err := http.NewRequest("GET", c.uri, nil)
 		if err != nil {
 			t.Error("NewRequest Error: ", err.Error())
 		}
