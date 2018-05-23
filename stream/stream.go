@@ -1,9 +1,6 @@
 package stream
 
 import (
-	"log"
-	"time"
-
 	"github.com/filtermatching/db"
 	f "github.com/filtermatching/filter"
 )
@@ -30,16 +27,15 @@ Subscription ...
 */
 type Subscription interface {
 	Updates() <-chan db.Profile
-	Close()
 }
 
 /*
 Subscribe ...
 */
-func Subscribe(matcher Matcher) Subscription {
+func Subscribe(in chan db.Profile, matcher Matcher) Subscription {
 	s := &sub{
 		matcher: matcher,
-		updates: make(chan db.Profile),
+		profile: in,
 	}
 	go s.filter()
 	return s
@@ -47,21 +43,13 @@ func Subscribe(matcher Matcher) Subscription {
 
 type sub struct {
 	matcher Matcher
-	updates chan db.Profile
-}
-
-func (s *sub) Updates() <-chan db.Profile {
-	return s.updates
-}
-
-func (s *sub) Close() {
-	close(s.updates)
+	profile chan db.Profile
 }
 
 func (s *sub) filter() {
-	select {
-	case s.updates <- s.matcher.Apply():
-	case <-time.After(300 * time.Millisecond):
-		log.Println("Fetch request timed out!")
-	}
+	s.profile <- s.matcher.Apply()
+}
+
+func (s *sub) Updates() <-chan db.Profile {
+	return s.profile
 }

@@ -31,20 +31,17 @@ func HandleFilter(filename string) func(http.ResponseWriter, *http.Request) {
 			return
 		}
 
-		var subscriptions []stream.Subscription
+		var matchedProfiles db.Profiles
+		profileOutChan := make(chan db.Profile)
 		for _, profile := range profiles.Matches {
 			matcher := stream.Apply(profile, *filter)
-			subscription := stream.Subscribe(matcher)
-			subscriptions = append(subscriptions, subscription)
-		}
-		var matchedProfiles db.Profiles
-		for _, subscription := range subscriptions {
+			subscription := stream.Subscribe(profileOutChan, matcher)
 			matched := <-subscription.Updates()
 			if !reflect.DeepEqual(matched, db.Profile{}) {
 				matchedProfiles.Matches = append(matchedProfiles.Matches, matched)
 			}
-			subscription.Close()
 		}
+		close(profileOutChan)
 		json.NewEncoder(w).Encode(matchedProfiles)
 	}
 }
