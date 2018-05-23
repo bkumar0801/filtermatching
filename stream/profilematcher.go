@@ -31,7 +31,11 @@ func (pf *ProfileMatcher) Apply() db.Profile {
 	if pf.Profile.Score > pf.Filter.CompatibilityScore {
 		return matchedProfiles
 	}
-	if (pf.Profile.Age < constants.MinAge) || (pf.Profile.Age > pf.Filter.Age) {
+	if pf.Filter.MinAge > pf.Filter.MaxAge {
+		return matchedProfiles
+	}
+
+	if (pf.Profile.Age < pf.Filter.MinAge) || (pf.Profile.Age > pf.Filter.MaxAge) {
 		return matchedProfiles
 	}
 	if (pf.Profile.Height < constants.MinHeight) || (pf.Profile.Height > pf.Filter.Height) {

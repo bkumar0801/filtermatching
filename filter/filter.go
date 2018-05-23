@@ -8,7 +8,8 @@ type Filter struct {
 	InContact          bool
 	Favouraite         bool
 	CompatibilityScore float32
-	Age                int32
+	MinAge             int32
+	MaxAge             int32
 	Height             int32
 	Distance           int32
 }
@@ -16,14 +17,15 @@ type Filter struct {
 /*
 NewFilter ...
 */
-func NewFilter(hasPhoto, inContact, favouraite bool, score float32, age, height, distance int32) *Filter {
+func NewFilter(hasPhoto, inContact, favouraite bool, score float32, minAge, maxAge, height, distance int32) *Filter {
 	return &Filter{
-		HasPhoto: hasPhoto,
-		InContact: inContact,
-		Favouraite: favouraite,
+		HasPhoto:           hasPhoto,
+		InContact:          inContact,
+		Favouraite:         favouraite,
 		CompatibilityScore: score,
-		Age: age,
-		Height: height,
-		Distance: distance,
+		MinAge:             minAge,
+		MaxAge:             maxAge,
+		Height:             height,
+		Distance:           distance,
 	}
 }

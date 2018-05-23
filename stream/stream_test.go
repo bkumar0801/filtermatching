@@ -14,7 +14,8 @@ func TestMatcherApply(t *testing.T) {
 		InContact:          true,
 		Favouraite:         true,
 		CompatibilityScore: 0.87,
-		Age:                40,
+		MinAge:             18,
+		MaxAge:             70,
 		Height:             140,
 		Distance:           40,
 	}
@@ -52,7 +53,8 @@ func TestStreamSubscription(t *testing.T) {
 		InContact:          true,
 		Favouraite:         true,
 		CompatibilityScore: 0.87,
-		Age:                40,
+		MinAge:             18,
+		MaxAge:             70,
 		Height:             140,
 		Distance:           40,
 	}

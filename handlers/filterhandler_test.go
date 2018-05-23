@@ -16,7 +16,7 @@ func TestHandlerFilter(t *testing.T) {
 		status int
 	}{
 		{
-			uri:    "/filter?photo=true&in_contacts=true&favouraite=true&compatibility_score=0.80&age=70&height=210&distance=300",
+			uri:    "/filter?photo=true&in_contacts=true&favouraite=true&compatibility_score=0.80&minAge=18&maxAge=70&height=210&distance=300",
 			status: http.StatusOK,
 		},
 		{
@@ -48,13 +48,14 @@ func TestBuildFilterFromQuery(t *testing.T) {
 	}{
 		{
 			description: "When all query parameters are given",
-			uri:         "/filter?photo=true&in_contacts=true&favouraite=true&compatibility_score=0.80&age=70&height=210&distance=300",
+			uri:         "/filter?photo=true&in_contacts=true&favouraite=true&compatibility_score=0.80&minAge=18&maxAge=70&height=210&distance=300",
 			want: &filter.Filter{
 				HasPhoto:           true,
 				InContact:          true,
 				Favouraite:         true,
 				CompatibilityScore: 0.80,
-				Age:                70,
+				MinAge:             18,
+				MaxAge:             70,
 				Height:             210,
 				Distance:           300,
 			},
@@ -62,13 +63,14 @@ func TestBuildFilterFromQuery(t *testing.T) {
 		},
 		{
 			description: "When compatibility score is less than and equal to zero",
-			uri:         "/filter?photo=true&in_contacts=true&favouraite=true&compatibility_score=0&age=70&height=210&distance=300",
+			uri:         "/filter?photo=true&in_contacts=true&favouraite=true&compatibility_score=0&minAge=18&maxAge=70&height=210&distance=300",
 			want: &filter.Filter{
 				HasPhoto:           true,
 				InContact:          true,
 				Favouraite:         true,
 				CompatibilityScore: 0.01,
-				Age:                70,
+				MinAge:             18,
+				MaxAge:             70,
 				Height:             210,
 				Distance:           300,
 			},
